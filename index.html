@@ -321,7 +321,7 @@ hr{border:none;border-top:1px solid var(--bdr);margin:14px 0}
         <input type="password" id="apw" placeholder="Password…" onkeydown="if(event.key==='Enter')unlock()">
       </div>
       <div class="row-end"><button class="btn bp" onclick="unlock()">Unlock →</button></div>
-      <p style="font-size:.73rem;color:var(--mut);margin-top:12px">Default: <code style="background:var(--surf2);padding:2px 6px;border-radius:4px">cuet2024</code></p>
+      <p style="font-size:.73rem;color:var(--mut);margin-top:12px">Default: <code style="background:var(--surf2);padding:2px 6px;border-radius:4px">fill password</code></p>
     </div>
   </div>
   <div id="apanel" style="display:none">
@@ -389,7 +389,7 @@ hr{border:none;border-top:1px solid var(--bdr);margin:14px 0}
 /* ════════════════════════════════════════════════
    DATA KEYS
 ════════════════════════════════════════════════ */
-const WK = 'cuet_words', SK = 'cuet_stats', HK = 'cuet_history', PW = 'cuet2024';
+const WK = 'cuet_words', SK = 'cuet_stats', HK = 'cuet_history', PW = 'cuet2026';
 
 const gW = () => { try{ return JSON.parse(localStorage.getItem(WK))||[]; }catch{ return []; } };
 const sW = a => localStorage.setItem(WK, JSON.stringify(a));
