@@ -363,7 +363,7 @@ hr{border:none;border-top:1px solid var(--bdr);margin:14px 0}
         <input type="password" id="apw" placeholder="Password…" onkeydown="if(event.key==='Enter')unlock()">
       </div>
       <div class="row-end"><button class="btn bp" onclick="unlock()">Unlock →</button></div>
-      <p style="font-size:.73rem;color:var(--mut);margin-top:12px">Default: <code style="background:var(--surf2);padding:2px 6px;border-radius:4px">cuet2024</code></p>
+      <p style="font-size:.73rem;color:var(--mut);margin-top:12px">Default: <code style="background:var(--surf2);padding:2px 6px;border-radius:4px">Enter password</code></p>
     </div>
   </div>
   <div id="apanel" style="display:none">
@@ -458,7 +458,7 @@ const sS = s => localStorage.setItem(profileKey('stats'), JSON.stringify(s));
 const gH = () => { try{ return JSON.parse(localStorage.getItem(profileKey('history')))||[]; }catch{ return []; } };
 const sH = h => localStorage.setItem(profileKey('history'), JSON.stringify(h));
 
-const PW  = 'cuet2024';
+const PW  = 'cuet2026';
 const uid = () => Math.random().toString(36).slice(2,10);
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
