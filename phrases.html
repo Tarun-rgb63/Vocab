@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUET VocabMaster – Idioms &amp; Phrases</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+:root {
+  --bg:#0d1117; --surf:#161b22; --surf2:#21262d; --bdr:#30363d;
+  --acc:#f0a500; --acc2:#d4920a; --grn:#3fb950; --red:#f85149;
+  --txt:#e6edf3; --mut:#7d8590; --rad:10px;
+}
+body.light {
+  --bg:#f6f8fa; --surf:#ffffff; --surf2:#eef1f5; --bdr:#d0d7de;
+  --txt:#1f2328; --mut:#636c76;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:.3s}
+
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:99;flex-wrap:wrap;}
+.logo{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--acc);white-space:nowrap}
+.logo b{color:var(--txt)}
+.back-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:8px;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);font:600 .82rem 'DM Sans',sans-serif;cursor:pointer;text-decoration:none;transition:.2s;white-space:nowrap}
+.back-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+.view{padding:24px 20px;max-width:820px;margin:0 auto;animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+input{width:100%;padding:9px 13px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font:0.9rem 'DM Sans',sans-serif;outline:none;transition:.2s}
+input:focus{border-color:var(--acc)}
+
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.sh h2{font-family:'DM Serif Display',serif;font-size:1.35rem}
+.sh p{font-size:.8rem;color:var(--mut);margin-top:2px}
+
+.srow{display:flex;gap:10px;margin-bottom:18px}
+.srow input{flex:1}
+
+.icard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;transition:.2s}
+.icard:hover{border-color:var(--acc)}
+.icard .inum{font-size:.68rem;font-weight:700;color:var(--mut);margin-bottom:4px}
+.icard h3{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--acc);margin-bottom:3px}
+.icard .imean{font-size:.84rem;color:var(--txt);margin-bottom:4px}
+.icard .iex{font-style:italic;font-size:.78rem;color:var(--mut)}
+
+.empty{text-align:center;padding:36px;color:var(--mut);font-style:italic;font-size:.88rem}
+
+.tbtn{width:34px;height:34px;border:1px solid var(--bdr);border-radius:8px;background:var(--surf2);cursor:pointer;display:grid;place-items:center;color:var(--mut);font-size:.95rem;transition:.2s;flex-shrink:0}
+.tbtn:hover{color:var(--acc);border-color:var(--acc)}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--grn);color:#000;padding:9px 20px;border-radius:8px;font-size:.84rem;font-weight:600;z-index:999;transition:.3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="index.html">← Home</a>
+  <div class="logo">Vocab<b>Master</b></div>
+  <div style="font-size:.75rem;color:var(--mut);flex:1">Idioms &amp; Phrases</div>
+  <button class="tbtn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+</div>
+
+<div class="view">
+  <div class="sh">
+    <div><h2>Idioms &amp; Phrases</h2><p id="idcount">200 idioms with meanings and examples</p></div>
+  </div>
+  <div class="srow">
+    <input id="idsrc" placeholder="🔍  Search idiom or meaning…" oninput="renderIdioms()">
+  </div>
+  <div id="idioms-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  document.getElementById('themeBtn').textContent = document.body.classList.contains('light') ? '🌙' : '☀️';
+}
+
+const IDIOMS = [
+  {n:1,phrase:'An open book',meaning:'Straightforward and honest dealings',example:'His life is an open book. Everything is crystal clear.'},
+  {n:2,phrase:'Out of the question',meaning:'Undesirable / Not worth discussing',example:'Asking my father for money was completely out of the question.'},
+  {n:3,phrase:'Hard nut to crack',meaning:'Difficult task',example:'This assignment is a hard nut to crack.'},
+  {n:4,phrase:'Not my cup of tea',meaning:'Not what somebody likes or is interested in',example:"Fiction novels aren't really my cup of tea."},
+  {n:5,phrase:'To break the ice',meaning:'To start a conversation',example:'It all helped to break the ice and keep conversation trickling along.'},
+  {n:6,phrase:'To eat a humble pie',meaning:'To say or show sorry for a mistake that one made',example:'It is a delight to see you eating humble pie.'},
+  {n:7,phrase:'To feel like a fish out of water',meaning:'Uncomfortable situation',example:'I felt like a fish out of water at my new school.'},
+  {n:8,phrase:"Eat anyone's salt",meaning:"To be anyone's guest",example:'Sarala is always ready to eat anyone\'s salt.'},
+  {n:9,phrase:'Give a hand with',meaning:'To help with',example:'Could you give me a hand with these suitcases?'},
+  {n:10,phrase:'Hold your tongue',meaning:'To be silent',example:'I often have to hold my tongue when he tells me how good he is at football.'},
+  {n:11,phrase:'No hard and fast rules',meaning:'Easy regulation',example:'There must be no hard and fast rule.'},
+  {n:12,phrase:'Live from hand to mouth',meaning:'Miserably / Barely surviving',example:'The professionals who work there have a hand-to-mouth existence.'},
+  {n:13,phrase:'Turn a deaf ear',meaning:'Refuse to obey / Ignore',example:'Please do not just turn a deaf ear to their cries for help.'},
+  {n:14,phrase:'Take exception',meaning:'To object',example:'I take exception to that remark about unfair practices.'},
+  {n:15,phrase:'To hail from',meaning:'To come from',example:'This is a film which seems to hail from the hippie era.'},
+  {n:16,phrase:'To put an end to',meaning:'Stop',example:'Mrs. Hem said she was going to put an end to all the talking and fooling from the class.'},
+  {n:17,phrase:'Under the thumb of',meaning:'Under the control of',example:'My father is under the thumb of my mother.'},
+  {n:18,phrase:'To get wind',meaning:'Come to know about something secret or private',example:"I don't want the public, and especially not the press, to get wind of it at this stage."},
+  {n:19,phrase:'Stand by',meaning:'To help/support somebody even in difficult times',example:'The decision has been made and I have got to stand by it.'},
+  {n:20,phrase:'In black and white',meaning:'In writing',example:"I won't believe it until I see it in black and white."},
+  {n:21,phrase:"From the bottom of one's heart",meaning:'To speak frankly / Sincerely',example:'I want to thank everyone from the bottom of my heart.'},
+  {n:22,phrase:'In a nutshell',meaning:'Brief / In summary',example:'In a nutshell, I want to sell this bag to you.'},
+  {n:23,phrase:'A shot in the dark',meaning:'An attempt to guess something',example:'I knew that Mr Craig had helped you, and it was a shot in the dark.'},
+  {n:24,phrase:'Stick to guns',meaning:'Hold on to original decisions',example:'He should have stuck to his guns and refused to meet her.'},
+  {n:25,phrase:'Out of hand',meaning:'Out of control / Immediately',example:'Akash went to see his doctor because he felt his drinking was getting out of hand.'},
+  {n:26,phrase:'The salt of the earth',meaning:'Very good and honest / Kind',example:'These folks are the salt of the earth.'},
+  {n:27,phrase:'Talking through hat',meaning:'Talking nonsense',example:'The Kapoor family always talk through their hat.'},
+  {n:28,phrase:'Looking forward to',meaning:'To expect something or someone',example:'I look forward to hearing from you soon.'},
+  {n:29,phrase:'Slip off',meaning:'Leave quietly',example:'You slipped off the class.'},
+  {n:30,phrase:'Get on well',meaning:'Have a friendly relationship',example:"She doesn't get on well with her father."},
+  {n:31,phrase:'In a pickle',meaning:'In an embarrassing or awkward situation',example:'Companies find themselves in a pickle when their markets change.'},
+  {n:32,phrase:'Allow a free hand',meaning:'Complete liberty',example:'He gave Stephanie a free hand in the decoration.'},
+  {n:33,phrase:'Lays out',meaning:'To spend money',example:'I never stop you from laying out on a problem.'},
+  {n:34,phrase:'Break down',meaning:'To lose control of feelings / Could not proceed',example:'Both sides are to blame for the breakdown in communication.'},
+  {n:35,phrase:"Cut coat according to one's cloth",meaning:'Live within your means',example:'I want a luxury car but I must cut my coat according to my cloth.'},
+  {n:36,phrase:'Weal and woe',meaning:'Ups and downs',example:'Mao stopped eating meat and shared weal and woe with the people around the country.'},
+  {n:37,phrase:'In the long run',meaning:'Eventually / In the end',example:'These changes will benefit the company in the long run.'},
+  {n:38,phrase:'Sit on the fence',meaning:'Avoid taking sides',example:'You cannot sit on the fence on this issue.'},
+  {n:39,phrase:'Make ends meet',meaning:'To have just enough money',example:'Many families struggle to make ends meet.'},
+  {n:40,phrase:'Hit the nail on the head',meaning:'To describe exactly what is causing a situation',example:"You've hit the nail on the head with that analysis."},
+  {n:41,phrase:'Pull someone\'s leg',meaning:'To joke or tease someone',example:'I was only pulling your leg — I didn\'t mean it seriously.'},
+  {n:42,phrase:'Bite the bullet',meaning:'To endure pain or difficulty',example:'We just have to bite the bullet and accept the pay cut.'},
+  {n:43,phrase:'Burning the midnight oil',meaning:'To work late into the night',example:'She\'s been burning the midnight oil to finish her project.'},
+  {n:44,phrase:'Cost an arm and a leg',meaning:'Very expensive',example:'The repairs cost an arm and a leg.'},
+  {n:45,phrase:'Under the weather',meaning:'Feeling ill',example:'I\'m feeling a bit under the weather today.'},
+  {n:46,phrase:'Bite the dust',meaning:'To fail or be defeated',example:'The project bit the dust after funding was withdrawn.'},
+  {n:47,phrase:'Cut corners',meaning:'To do something the easy way, sacrificing quality',example:'You cannot cut corners when it comes to safety.'},
+  {n:48,phrase:'Spill the beans',meaning:'To reveal secret information',example:'Don\'t spill the beans about the surprise party!'},
+  {n:49,phrase:'The ball is in your court',meaning:'It is up to you to take action',example:'I\'ve done my part — the ball is in your court now.'},
+  {n:50,phrase:'Barking up the wrong tree',meaning:'To make a wrong assumption',example:'If you think I did it, you\'re barking up the wrong tree.'},
+  {n:51,phrase:'Bite off more than you can chew',meaning:'To take on more than you can handle',example:'I think I\'ve bitten off more than I can chew with this project.'},
+  {n:52,phrase:'Break a leg',meaning:'Good luck',example:'Break a leg at your performance tonight!'},
+  {n:53,phrase:'Don\'t judge a book by its cover',meaning:'Don\'t judge by appearance',example:'Don\'t judge a book by its cover — he\'s actually very kind.'},
+  {n:54,phrase:'Every cloud has a silver lining',meaning:'Every bad situation has a positive side',example:'I know you\'re upset, but every cloud has a silver lining.'},
+  {n:55,phrase:'Hit the books',meaning:'To study',example:'I need to hit the books before the exam.'},
+  {n:56,phrase:'Hit the sack',meaning:'To go to bed',example:'It\'s late — I\'m going to hit the sack.'},
+  {n:57,phrase:'Kill two birds with one stone',meaning:'To accomplish two things with a single action',example:'By studying and exercising, she killed two birds with one stone.'},
+  {n:58,phrase:'Let sleeping dogs lie',meaning:'Don\'t stir up trouble',example:'Don\'t bring up old arguments — let sleeping dogs lie.'},
+  {n:59,phrase:'Miss the boat',meaning:'To miss an opportunity',example:'If you don\'t apply now, you\'ll miss the boat.'},
+  {n:60,phrase:'No pain no gain',meaning:'You must work hard to achieve success',example:'No pain no gain — keep practising every day.'},
+  {n:61,phrase:'Once in a blue moon',meaning:'Something happens rarely',example:'Your performance puts on a good show once in a blue moon.'},
+  {n:62,phrase:'On the fence',meaning:'Undecided',example:'She\'s still on the fence about taking the new job.'},
+  {n:63,phrase:'Over the moon',meaning:'Extremely happy',example:'She was over the moon when she heard the news.'},
+  {n:64,phrase:'Piece of cake',meaning:'Something very easy',example:'The exam was a piece of cake for her.'},
+  {n:65,phrase:'Pull yourself together',meaning:'To calm down',example:'Pull yourself together and think clearly.'},
+  {n:66,phrase:'Rule of thumb',meaning:'A general principle',example:'As a rule of thumb, save at least 10% of your income.'},
+  {n:67,phrase:'See eye to eye',meaning:'To agree with someone',example:'We don\'t always see eye to eye on politics.'},
+  {n:68,phrase:'Sit tight',meaning:'To wait patiently',example:'Sit tight — help is on the way.'},
+  {n:69,phrase:'Speak of the devil',meaning:'Said when someone appears just after being mentioned',example:'Speak of the devil — here comes Ravi now!'},
+  {n:70,phrase:'The last straw',meaning:'The final problem that makes a situation intolerable',example:'Losing his keys was the last straw after a terrible day.'},
+  {n:71,phrase:'The whole nine yards',meaning:'Everything possible',example:'She gave the whole nine yards in her presentation.'},
+  {n:72,phrase:'Throw in the towel',meaning:'To give up',example:'After months of struggling, he threw in the towel.'},
+  {n:73,phrase:'Under the table',meaning:'Done secretly or illegally',example:'They paid him under the table to avoid taxes.'},
+  {n:74,phrase:'Up in the air',meaning:'Uncertain',example:'The plans are still up in the air.'},
+  {n:75,phrase:'Wet behind the ears',meaning:'Inexperienced',example:'He\'s still wet behind the ears when it comes to sales.'},
+  {n:76,phrase:'You can\'t have your cake and eat it too',meaning:'You can\'t have everything',example:'You can\'t have your cake and eat it too — choose one.'},
+  {n:77,phrase:'Add insult to injury',meaning:'To make a bad situation worse',example:'He added insult to injury by laughing at her mistake.'},
+  {n:78,phrase:'All ears',meaning:'Fully listening',example:'Tell me what happened — I\'m all ears.'},
+  {n:79,phrase:'Apple of one\'s eye',meaning:'Someone very precious',example:'Their daughter is the apple of their eye.'},
+  {n:80,phrase:'Backseat driver',meaning:'A person who gives unwanted advice',example:'Stop being a backseat driver and let me handle it.'},
+  {n:81,phrase:'Bend over backwards',meaning:'To try very hard to help',example:'She bent over backwards to make us feel welcome.'},
+  {n:82,phrase:'At daggers drawn',meaning:'Enmity',example:'They used to be friends once, but have been at daggers drawn since their fight last year.'},
+  {n:83,phrase:'Bury the hatchet',meaning:'Make peace',example:'It is time to bury the hatchet and forget about what has happened in the past.'},
+  {n:84,phrase:'Null and void',meaning:'Not binding / Having no legal force',example:'The election was declared null and void.'},
+  {n:85,phrase:'Break in',meaning:'To train somebody or something / To force entry',example:'The burglars broke in through the kitchen window.'},
+  {n:86,phrase:"Stir up a Hornet's nest",meaning:'To create a lot of trouble',example:'His remarks stirred up a real hornet\'s nest.'},
+  {n:87,phrase:'Second thoughts',meaning:'Reconsidering the original idea',example:'After she agreed to lend him the money, she had second thoughts.'},
+  {n:88,phrase:'Average out',meaning:'Balance',example:'The audience figures were lower than average for this sort of film.'},
+  {n:89,phrase:'Floored',meaning:'To surprise or confuse',example:"I didn't know what to say — I was completely floored."},
+  {n:90,phrase:'Give way',meaning:'Collapse',example:'He gave away most of his country in fury.'},
+  {n:91,phrase:"Feather in one's cap",meaning:'An achievement',example:"Harry's appointment to this important post was a feather in his cap."},
+  {n:92,phrase:'Face the music',meaning:'Get reprimanded',example:'After several years of cheating his employer, the embezzler finally had to face the music.'},
+  {n:93,phrase:'Under a cloud',meaning:'Under suspicion',example:'The military are under a cloud for killing civilians while breaking up a demonstration.'},
+  {n:94,phrase:'No love lost between',meaning:'Not on good terms',example:"It seems safe to say there's no love lost between the two men."},
+  {n:95,phrase:'Fair and square',meaning:'Honest',example:'He won the election fair and square.'},
+  {n:96,phrase:'A white elephant',meaning:'Costly or troublesome possession',example:'She believes the development may become a white elephant that fails to attract suitable tenants.'},
+  {n:97,phrase:'Does not hold water',meaning:'Cannot be believed',example:'This argument simply cannot hold water in Europe.'},
+  {n:98,phrase:'A wild goose chase',meaning:'Futile search',example:'After two hours spent wandering in the snow, I realized we were on a wild goose chase.'},
+  {n:99,phrase:'Going places',meaning:'Talented and successful',example:'You always knew Barbara was going places; she was different.'},
+  {n:100,phrase:'In cold blood',meaning:'A murder done deliberately / Without emotion',example:'The crime had been committed in cold blood.'},
+  {n:101,phrase:'Off and on',meaning:'Occasionally',example:'He worked off and on as a bicycle messenger, but he never found permanent work.'},
+  {n:102,phrase:'Took to heels',meaning:'Run away in fear',example:'They took to their heels when they saw the policeman approaching.'},
+  {n:103,phrase:'To starve off',meaning:'Postpone',example:'We were hoping to stave off these difficult decisions until September.'},
+  {n:104,phrase:'To give a piece of mind',meaning:'To reprimand',example:"I'm going to give that mechanic a piece of my mind if the car's not fixed this time."},
+  {n:105,phrase:'Pay through nose',meaning:'Pay an extremely high price',example:'We paid through the nose to get the car fixed.'},
+  {n:106,phrase:'Draw on fancy',meaning:'Use imagination',example:'Painters draw on their fancy in their sketches and paintings.'},
+  {n:107,phrase:'Go through fire and water',meaning:'Undergo any risk',example:'Ryan has gone through fire and water to pursue his career as a doctor.'},
+  {n:108,phrase:'Put up with',meaning:'Tolerate',example:"I'm not going to put up with their smoking any longer."},
+  {n:109,phrase:'By fits and starts',meaning:'Irregularly',example:'Military technology advances by fits and starts.'},
+  {n:110,phrase:'Reading between the lines',meaning:'Understanding the hidden meaning',example:"She said she could afford it, but reading between the lines I don't think she has enough money."},
+  {n:111,phrase:'Pros and cons',meaning:'Considering all the facts',example:'They sat for hours debating the pros and cons of setting up their own firm.'},
+  {n:112,phrase:'By leaps and bounds',meaning:'Very quickly',example:'School enrollment is increasing by leaps and bounds.'},
+  {n:113,phrase:'In the good books',meaning:'In favour with boss',example:"He's trying to get back in his boss's good books by offering to work overtime."},
+  {n:114,phrase:"At one's wit's end",meaning:'Puzzled / Confused / Perplexed',example:"I've tried every possible source without success, and now I'm at my wit's end."},
+  {n:115,phrase:'To fight tooth and nail',meaning:'To fight in a determined way for what you want',example:'We fought tooth and nail to get the route of the new road changed.'},
+  {n:116,phrase:'The green-eyed monster',meaning:'Jealousy',example:'He kept the green-eyed monster at bay most of the time.'},
+  {n:117,phrase:'Set the record straight',meaning:'Give a correct account',example:'Let me set the record straight about what really happened last week.'},
+  {n:118,phrase:'Laying off',meaning:'Dismissal from jobs',example:'He was laid off last week.'},
+  {n:119,phrase:'Spilling the beans',meaning:'Revealing information indiscreetly',example:'They were reluctant to spill the beans on the ancient rituals because it might bring bad luck.'},
+  {n:120,phrase:'Carry out',meaning:'Execute',example:'I was elected to carry out a programme.'},
+  {n:121,phrase:'Ins and outs',meaning:'Full details',example:"I'm still learning all the ins and outs of American politics."},
+  {n:122,phrase:'In the good books',meaning:'In favour with',example:"He's trying to get back in his boss's good books by offering to work overtime."},
+  {n:123,phrase:'Shake in shoes',meaning:'Tremble with fear',example:'She shook in her shoes on seeing the cage of the tiger broken.'},
+  {n:124,phrase:"Hobson's choice",meaning:'No real choice at all',example:"It's a case of Hobson's choice, because if I don't agree to their terms, I'll lose my job."},
+  {n:125,phrase:'An axe to grind',meaning:'A private interest to serve',example:'I am taking interest in the matter. But believe me I have no axe to grind.'},
+  {n:126,phrase:"To blow one's own trumpet",meaning:"Praise one's own abilities and achievements",example:'He refused to blow his own trumpet and blushingly declined to speak.'},
+  {n:127,phrase:'A sore point',meaning:'Something which hurts',example:'Money was a sore point between us.'},
+  {n:128,phrase:'Like a phoenix',meaning:'With a new life / Rebirth / Reincarnation',example:'After his catastrophic defeat in Melbourne, he rose like a phoenix.'},
+  {n:129,phrase:'To keep under wraps',meaning:'Secret',example:'The design for the new plant is under wraps.'},
+  {n:130,phrase:'Cut no ice',meaning:'Had no influence',example:'The weather had no influence on the decision to close the school.'},
+  {n:131,phrase:'Brought up',meaning:'Introduce for discussion',example:'Today, I am here to bring it up.'},
+  {n:132,phrase:'Cannot hold a candle to',meaning:'Cannot be compared to',example:"Senator Nelson is extremely knowledgeable, but as a speaker, he can't hold a candle to Senator Delano."},
+  {n:133,phrase:"Burn one's boat",meaning:'Leave no means of return',example:"Turning down one job before having another is a sure way of burning your boats."},
+  {n:134,phrase:"Make one's flesh creep",meaning:'Horrify',example:'The memory of all that blood was enough to make my flesh creep.'},
+  {n:135,phrase:'To take into account',meaning:'To consider',example:"A good architect takes into account the building's surroundings."},
+  {n:136,phrase:'Blue-eyed boys',meaning:'Favorites',example:"He was the media's blue-eyed boy."},
+  {n:137,phrase:'Dropping names',meaning:'Mentioning famous people you know to impress others',example:'The assistant carried on name-dropping all the famous riders he knew.'},
+  {n:138,phrase:'A Red letter day',meaning:'An important day',example:'It was truly a red-letter day for him.'},
+  {n:139,phrase:"At stone's throw",meaning:'Very near',example:'The Sea Life Centre is just a stone\'s throw from the sea itself.'},
+  {n:140,phrase:"Turn up one's nose at",meaning:'To reject / Despise',example:"She turned up her nose at the job because she didn't think it had enough status."},
+  {n:141,phrase:"Turn one's head",meaning:'To feel proud in a way that others find annoying',example:'Success has never turned her head.'},
+  {n:142,phrase:'High and dry',meaning:'Neglected / To leave someone helpless',example:'All my workers quit and left me high and dry.'},
+  {n:143,phrase:'Take for granted',meaning:'To accept readily / Pre-suppose as certainly true',example:"She knows she's very privileged — she doesn't take it for granted."},
+  {n:144,phrase:'The man in the street',meaning:'An ordinary man (common man)',example:'Even as a special guest, I was looking like the man in the street.'},
+  {n:145,phrase:'To catch up with',meaning:'To compete with',example:'I want to catch up with this daunting task with my friends.'},
+  {n:146,phrase:'Fight to the bitter end',meaning:'To fight a losing battle',example:'We shall fight this thing to the bitter end.'},
+  {n:147,phrase:'Throw down a glove',meaning:'To give a challenge',example:'The Prime Minister was throwing down the gauntlet to his internal critics.'},
+  {n:148,phrase:'Let the cat out of the bag',meaning:'To utter a secret carelessly or by mistake',example:'Tim let the cat out of the bag about my surprise birthday party.'},
+  {n:149,phrase:'To have too many irons in the fire',meaning:'To get engaged in too many enterprises at the same time',example:"If that job application doesn't work out I have a couple more irons in the fire."},
+  {n:150,phrase:'Fall through',meaning:'To fail',example:'Our plans fell through because of lack of money.'},
+  {n:151,phrase:'To smell a rat',meaning:'To suspect a trick',example:"When I didn't hear any more from my prospective employer, I began to smell a rat."},
+  {n:152,phrase:'Turn a deaf ear',meaning:'Disobey',example:"You can plead all day but he's turning a deaf ear to everyone."},
+  {n:153,phrase:'To steer clear of',meaning:'Avoid',example:"Anil's speech totally steered clear of controversial issues."},
+  {n:154,phrase:"To get one's own back",meaning:"To get one's revenge",example:'After he lost his job, he vowed that he would find a way to get his own back.'},
+  {n:155,phrase:'To run across',meaning:'To meet by chance',example:'I ran across several old friends when I went back to my hometown.'},
+  {n:156,phrase:'A dark horse',meaning:'An unforeseen competitor',example:"Anna's such a dark horse — I had no idea she'd published a novel."},
+  {n:157,phrase:'A man of letters',meaning:'A literary person',example:'Kabul is a man of great experience, a man of letters and of law.'},
+  {n:158,phrase:'Keep the wolf away from the door',meaning:'To keep off starvation',example:'As a student, I am finding an evening job to keep the wolf from the door.'},
+  {n:159,phrase:'Out of sorts',meaning:'Ill or sick / Upset',example:"Don't give him work today — he's out of sorts."},
+  {n:160,phrase:'Gut feeling',meaning:'Strong instinct based on feelings rather than thought',example:"I have a gut feeling that Jerry's going to be late again."},
+  {n:161,phrase:'A close fisted man',meaning:'Miser',example:'Despite being rich, Rakesh is close-fisted and never pays his bill.'},
+  {n:162,phrase:'Play ducks and drakes',meaning:'Spend lavishly / To waste or squander',example:'Karan lost his job for playing ducks and drakes.'},
+  {n:163,phrase:'Be taken aback',meaning:'Shocked or surprised',example:'When I told him my answer, he seemed taken aback.'},
+  {n:164,phrase:'Lay it on thick',meaning:'An exaggeration / Overstate',example:"Jane laid it on thick when she said this was the greatest book she'd ever read."},
+  {n:165,phrase:"Bird's eye view",meaning:'An overview / A general view from above',example:"Girls were looking down upon a bird's-eye view of the old Spanish town they had just left."},
+  {n:166,phrase:'To win laurels',meaning:'To earn great prestige',example:'Anand is a very hard-working boy; he is sure to win laurels in life.'},
+  {n:167,phrase:'In the soup',meaning:'To be in trouble',example:'That stunt landed her in the soup.'},
+  {n:168,phrase:'Draw the line',meaning:'To set a limit',example:'I already drew the line for this game.'},
+  {n:169,phrase:'A bee hive',meaning:'A busy place',example:'Delhi is a beehive of traffic.'},
+  {n:170,phrase:'To cut the Gordian knot',meaning:'To perform a difficult task',example:'Alina cut the Gordian knot that day — it was too unexpected.'},
+  {n:171,phrase:'Fight tooth and nail',meaning:'Fight with all strength',example:'I will fight tooth and nail to present our best.'},
+  {n:172,phrase:'Sit on the fence',meaning:'To avoid becoming involved in deciding something',example:'Ram is not afraid of making decisions and is a man who never sits on the fence.'},
+  {n:173,phrase:'Cock and bull story',meaning:'A concocted or absurd story',example:"Don't ask him about his ancestry unless you want to hear a cock-and-bull story."},
+  {n:174,phrase:'Under a cloud',meaning:'Under suspicion',example:'He was under a cloud after his men failed to find who had placed the bomb in the office.'},
+  {n:175,phrase:'To pull a long face',meaning:'Look sad',example:'He pulled a long face of his own, and was about to cry.'},
+  {n:176,phrase:'Beat about the bush',meaning:'To say everything except the main topic',example:"If you want to ask me, just ask; don't beat around the bush."},
+  {n:177,phrase:'To add fuel to the fire',meaning:'Make things worse',example:'John only added fuel to the fire when he accused the other team of cheating.'},
+  {n:178,phrase:'To take to heart',meaning:'To be greatly affected',example:'I took your words to heart.'},
+  {n:179,phrase:'To bring to light',meaning:'To reveal',example:'The investigation brought to light several new facts about the case.'},
+  {n:180,phrase:'All moon shine',meaning:'Far from reality',example:'It is absolute moonshine to say it gives fair shares for all.'},
+  {n:181,phrase:"At a snail's pace",meaning:'Slowly',example:"Why are you walking at a snail's pace?"},
+  {n:182,phrase:'Abide by',meaning:'Respect or obey',example:'If you want to continue this job, you have to abide by the rules.'},
+  {n:183,phrase:'Close down',meaning:'Stop operating',example:'The hospital closed down due to bad weather.'},
+  {n:184,phrase:'Figure out',meaning:'Understand / Find the answer',example:'Anil is trying to figure out the actual problem.'},
+  {n:185,phrase:'Get along with',meaning:'Have a good relationship',example:'Raju and Puja get along well in the movie.'},
+  {n:186,phrase:'Get rid of',meaning:'Remove / Give away',example:'I want to get rid of this boring lecture.'},
+  {n:187,phrase:'Hang up',meaning:'End phone call',example:"Don't hang up the call; I will continue this discussion."},
+  {n:188,phrase:'Agree with',meaning:'Say / Same opinion',example:'I agree with you that fruits are too important for health.'},
+  {n:189,phrase:'Keep on',meaning:'Continue doing something',example:'Keep on working hard if you really want success.'},
+  {n:190,phrase:'Get off',meaning:'Leave (bus, plane, flight)',example:'Get off the train at Dehradun.'},
+  {n:191,phrase:'Make fun of',meaning:'Laugh at someone / something',example:'You should not make fun of anyone.'},
+  {n:192,phrase:'Hurry up',meaning:'Be quick',example:"Hurry up! We don't have the full day for this."},
+  {n:193,phrase:'Once in a blue moon',meaning:'Something happens rarely',example:'Your performance puts on a good show once in a blue moon.'},
+  {n:194,phrase:'Spin a yarn',meaning:'Tell a long story / Might be exaggerated',example:'This author has the skill to spin a yarn.'},
+  {n:195,phrase:'Asleep at the wheels',meaning:'Not paying attention',example:'If I am asleep at the wheels, I fail to see my responsibility.'},
+  {n:196,phrase:'No pain, no gain',meaning:'Suffering in order to achieve something',example:'Work hard because no pain, no gain.'},
+  {n:197,phrase:"An ace up one's sleeve",meaning:'A secret advantage',example:'The leader has several other aces up his sleeve.'},
+  {n:198,phrase:'A piece of cake',meaning:'Very easy',example:'I agree that training him would be a piece of cake.'},
+  {n:199,phrase:'Look into',meaning:'To investigate',example:'A team of CBI looked into the problem.'},
+  {n:200,phrase:'Knock out',meaning:'To hit someone so hard they lose consciousness',example:'Deepu knocked out Ramu in the match.'},
+];
+
+function renderIdioms() {
+  const q = (document.getElementById('idsrc').value || '').toLowerCase();
+  const filtered = q
+    ? IDIOMS.filter(i => i.phrase.toLowerCase().includes(q) || i.meaning.toLowerCase().includes(q))
+    : IDIOMS;
+  document.getElementById('idcount').textContent = `${filtered.length} of ${IDIOMS.length} idioms`;
+  document.getElementById('idioms-list').innerHTML = filtered.length
+    ? filtered.map(i => `
+      <div class="icard">
+        <div class="inum">#${i.n}</div>
+        <h3>${esc(i.phrase)}</h3>
+        <div class="imean">${esc(i.meaning)}</div>
+        <div class="iex">"${esc(i.example)}"</div>
+      </div>`).join('')
+    : '<div class="empty">No idioms match your search.</div>';
+}
+
+renderIdioms();
+</script>
+</body>
+</html>

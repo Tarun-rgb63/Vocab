@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUET VocabMaster – Vocabulary</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+:root {
+  --bg:#0d1117; --surf:#161b22; --surf2:#21262d; --bdr:#30363d;
+  --acc:#f0a500; --acc2:#d4920a; --grn:#3fb950; --red:#f85149;
+  --txt:#e6edf3; --mut:#7d8590; --rad:10px;
+}
+body.light {
+  --bg:#f6f8fa; --surf:#ffffff; --surf2:#eef1f5; --bdr:#d0d7de;
+  --txt:#1f2328; --mut:#636c76;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:.3s}
+
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:99;flex-wrap:wrap;}
+.logo{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--acc);white-space:nowrap}
+.logo b{color:var(--txt)}
+.back-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:8px;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);font:600 .82rem 'DM Sans',sans-serif;cursor:pointer;text-decoration:none;transition:.2s;white-space:nowrap}
+.back-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+.view{padding:24px 20px;max-width:820px;margin:0 auto}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view{animation:up .25s ease}
+
+label{display:block;font-size:.75rem;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+input,select{width:100%;padding:9px 13px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font:0.9rem 'DM Sans',sans-serif;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--acc)}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700}
+.be{background:#1c2d22;color:var(--grn)} .bm{background:#2d2408;color:var(--acc)} .bh{background:#2d1b1b;color:var(--red)}
+body.light .be{background:#d1fae5;color:#065f46}
+body.light .bm{background:#fef3c7;color:#92400e}
+body.light .bh{background:#fee2e2;color:#991b1b}
+
+.wcard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;transition:.2s}
+.wcard:hover{border-color:var(--acc)}
+.wcard h3{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--acc);margin-bottom:3px}
+.wcard p{font-size:.82rem;color:var(--mut);line-height:1.5}
+.wcard .ex{font-style:italic;font-size:.78rem;color:var(--mut);margin-top:4px}
+
+.srow{display:flex;gap:10px;margin-bottom:18px}
+.srow input{flex:1}
+.srow select{width:auto;min-width:120px}
+
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.sh h2{font-family:'DM Serif Display',serif;font-size:1.35rem}
+.sh p{font-size:.8rem;color:var(--mut);margin-top:2px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font:600 .84rem 'DM Sans',sans-serif;cursor:pointer;transition:.2s}
+.bg{background:var(--surf2);color:var(--txt);border:1px solid var(--bdr)}
+.bg:hover{border-color:var(--acc);color:var(--acc)}
+.bs{padding:5px 10px;font-size:.76rem}
+.bp{background:var(--acc);color:#000}
+.bp:hover{background:var(--acc2)}
+
+.tag{display:inline-block;font-size:.68rem;padding:2px 7px;border-radius:4px;background:var(--surf2);color:var(--mut);border:1px solid var(--bdr);margin:2px 2px 0 0}
+.empty{text-align:center;padding:36px;color:var(--mut);font-style:italic;font-size:.88rem}
+.tbtn{width:34px;height:34px;border:1px solid var(--bdr);border-radius:8px;background:var(--surf2);cursor:pointer;display:grid;place-items:center;color:var(--mut);font-size:.95rem;transition:.2s;flex-shrink:0}
+.tbtn:hover{color:var(--acc);border-color:var(--acc)}
+
+.cat-filter{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.cat-btn{padding:4px 11px;border-radius:20px;border:1px solid var(--bdr);background:var(--surf2);color:var(--mut);font-size:.72rem;font-weight:600;cursor:pointer;transition:.2s}
+.cat-btn:hover,.cat-btn.on{border-color:var(--acc);color:var(--acc);background:rgba(240,165,0,.08)}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--grn);color:#000;padding:9px 20px;border-radius:8px;font-size:.84rem;font-weight:600;z-index:999;transition:.3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:560px){.srow{flex-wrap:wrap}.srow select{min-width:100%}}
+@media print{
+  .topbar,.no-print{display:none!important}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="index.html">← Home</a>
+  <div class="logo">Vocab<b>Master</b></div>
+  <div style="font-size:.75rem;color:var(--mut);flex:1">Vocabulary</div>
+  <button class="btn bg bs no-print" onclick="window.print()">🖨 Print</button>
+  <button class="tbtn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+</div>
+
+<div class="view">
+  <div class="sh">
+    <div><h2>Vocabulary List</h2><p id="wcount">Loading…</p></div>
+  </div>
+  <div class="srow">
+    <input id="src" placeholder="🔍  Search word or meaning…" oninput="renderVocab()">
+    <select id="fdiff" onchange="renderVocab()">
+      <option value="">All Levels</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+  </div>
+  <div class="cat-filter" id="catFilter"></div>
+  <div id="vocab-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="print-only" id="psect" style="display:none;padding:20px;font-family:serif">
+  <h1 style="font-size:1.4rem;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:14px">CUET Vocabulary List</h1>
+  <div id="pcontent"></div>
+</div>
+
+<script>
+const WK_GLOBAL = 'cuet_words';
+const gW = () => { try{ return JSON.parse(localStorage.getItem(WK_GLOBAL))||[]; }catch{ return []; } };
+const sW = a => localStorage.setItem(WK_GLOBAL, JSON.stringify(a));
+const uid = () => Math.random().toString(36).slice(2,10);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function toast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast'+(err?' err':'');
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  document.getElementById('themeBtn').textContent = document.body.classList.contains('light') ? '🌙' : '☀️';
+}
+
+let activeCategory = '';
+
+function buildCatFilter() {
+  const words = gW();
+  const cats = [...new Set(words.map(w => w.category || 'General').filter(Boolean))].sort();
+  const el = document.getElementById('catFilter');
+  el.innerHTML = `<button class="cat-btn on" onclick="filterCat('')">All</button>` +
+    cats.map(c => `<button class="cat-btn" onclick="filterCat('${esc(c)}')">${esc(c)}</button>`).join('');
+}
+
+function filterCat(cat) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('on', b.textContent === (cat || 'All'));
+  });
+  renderVocab();
+}
+
+function renderVocab() {
+  const words = gW();
+  const q  = (document.getElementById('src').value || '').toLowerCase();
+  const df = document.getElementById('fdiff').value;
+  const list = words.filter(w =>
+    (!q  || w.word.toLowerCase().includes(q) || w.meaning.toLowerCase().includes(q)) &&
+    (!df || w.difficulty === df) &&
+    (!activeCategory || (w.category || 'General') === activeCategory)
+  );
+  document.getElementById('wcount').textContent = `${list.length} of ${words.length} words`;
+  buildCatFilter();
+  const el = document.getElementById('vocab-list');
+  if(!list.length){ el.innerHTML='<div class="empty">No words found. Try a different filter.</div>'; return; }
+  el.innerHTML = list.map(w=>`
+    <div class="wcard">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+          <h3>${esc(w.word)}</h3>
+          <span class="badge b${w.difficulty[0]}">${w.difficulty}</span>
+          ${w.category?`<span class="tag">${esc(w.category)}</span>`:''}
+        </div>
+        <p>${esc(w.meaning)}</p>
+        ${w.example?`<p class="ex">"${esc(w.example)}"</p>`:''}
+        <div style="margin-top:6px">${w.wrong.map(o=>`<span class="tag">${esc(o)}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('pcontent').innerHTML = list.map((w,i)=>`
+    <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #ccc">
+      <strong>${i+1}. ${esc(w.word)}</strong> [${w.difficulty}]${w.category?` [${esc(w.category)}]`:''}<br>
+      <em>Meaning:</em> ${esc(w.meaning)}<br>
+      ${w.example?`<em>Example:</em> ${esc(w.example)}`:''}
+    </div>`).join('');
+}
+
+/* ── Seed data on first run ── */
+const PDF_WORDS = [
+  {word:'Aviation',meaning:'Study of flying aeroplanes',category:'Study',difficulty:'easy',wrong:['Study of birds','Study of space','Study of water']},
+  {word:'Astronomy',meaning:'Study of celestial bodies or stars',category:'Study',difficulty:'easy',wrong:['Study of rocks','Study of insects','Study of earth']},
+  {word:'Alchemy',meaning:'Medieval study of chemistry / search for universal panacea',category:'Study',difficulty:'medium',wrong:['Study of ancient texts','Study of weather','Study of metals']},
+  {word:'Acoustics',meaning:'Study of sound and sound waves',category:'Study',difficulty:'easy',wrong:['Study of light','Study of heat','Study of air pressure']},
+  {word:'Anthropology',meaning:'Study of the evolution of mankind',category:'Study',difficulty:'medium',wrong:['Study of animals','Study of plants','Study of the mind']},
+  {word:'Botany',meaning:'Study of plants',category:'Study',difficulty:'easy',wrong:['Study of animals','Study of fungi','Study of minerals']},
+  {word:'Biology',meaning:'Study of living things',category:'Study',difficulty:'easy',wrong:['Study of chemicals','Study of rocks','Study of stars']},
+  {word:'Calligraphy',meaning:'Art of ornate and good handwriting',category:'Study',difficulty:'easy',wrong:['Study of colours','Art of sculpting','Art of painting']},
+  {word:'Chronology',meaning:'Science of ordering events in time',category:'Study',difficulty:'medium',wrong:['Study of stars','Study of ancient maps','Study of chemical reactions']},
+  {word:'Demography',meaning:'Study of statistics of populations',category:'Study',difficulty:'medium',wrong:['Study of democracy','Study of geography','Study of data science']},
+  {word:'Entomology',meaning:'Study of insects',category:'Study',difficulty:'medium',wrong:['Study of plants','Study of bacteria','Study of birds']},
+  {word:'Ecology',meaning:'Study of relations between organisms and their environment',category:'Study',difficulty:'easy',wrong:['Study of economics','Study of earth layers','Study of evolution']},
+  {word:'Genetics',meaning:'Study of heredity, genes, and variation in living organisms',category:'Study',difficulty:'medium',wrong:['Study of bacteria','Study of evolution','Study of cells']},
+  {word:'Geology',meaning:'Study of rocks and soil',category:'Study',difficulty:'easy',wrong:['Study of stars','Study of weather','Study of oceans']},
+  {word:'Geography',meaning:'Mapping of earth and its formation',category:'Study',difficulty:'easy',wrong:['Study of weather','Study of rocks','Study of ancient history']},
+  {word:'Graphology',meaning:'Study of handwriting',category:'Study',difficulty:'medium',wrong:['Study of graphs','Study of printing','Study of ancient scripts']},
+  {word:'Gerontology',meaning:'Study of various aspects of ageing',category:'Study',difficulty:'hard',wrong:['Study of ancient history','Study of genetics','Study of child development']},
+  {word:'Hydraulics',meaning:'Study of the flow of water and other liquids',category:'Study',difficulty:'medium',wrong:['Study of water purity','Study of rainfall','Study of ocean currents']},
+  {word:'Lexicography',meaning:'Practice of writing dictionaries',category:'Study',difficulty:'hard',wrong:['Study of grammar','Study of old languages','Study of linguistics']},
+  {word:'Numismatics',meaning:'Study and collection of coins, tokens, and paper money',category:'Study',difficulty:'hard',wrong:['Study of numbers','Study of trade history','Study of ancient economies']},
+  {word:'Ornithology',meaning:'Study of birds',category:'Study',difficulty:'medium',wrong:['Study of insects','Study of reptiles','Study of sea animals']},
+  {word:'Philology',meaning:'Study of languages',category:'Study',difficulty:'medium',wrong:['Study of literature','Study of philosophy','Study of ancient cultures']},
+  {word:'Palaeography',meaning:'Study of ancient writing and scriptures',category:'Study',difficulty:'hard',wrong:['Study of fossils','Study of ancient art','Study of ancient coins']},
+  {word:'Psychology',meaning:'Study of the human mind',category:'Study',difficulty:'easy',wrong:['Study of human behaviour externally','Study of human anatomy','Study of brain surgery']},
+  {word:'Psephology',meaning:'Study of election trends',category:'Study',difficulty:'hard',wrong:['Study of political science','Study of voting laws','Study of government policies']},
+  {word:'Theology',meaning:'Study of religion',category:'Study',difficulty:'easy',wrong:['Study of philosophy','Study of mythology','Study of ancient civilizations']},
+  {word:'Ecophobia',meaning:'Fear of home surroundings',category:'Phobias',difficulty:'hard',wrong:['Fear of ecology','Fear of water','Fear of the dark']},
+  {word:'Zoophobia',meaning:'Fear of animals',category:'Phobias',difficulty:'medium',wrong:['Fear of zoos','Fear of insects only','Fear of wild forests']},
+  {word:'Claustrophobia',meaning:'Fear of closed or confined spaces',category:'Phobias',difficulty:'easy',wrong:['Fear of heights','Fear of open spaces','Fear of crowds']},
+  {word:'Hydrophobia',meaning:'Fear of water',category:'Phobias',difficulty:'easy',wrong:['Fear of drowning only','Fear of floods','Fear of rain']},
+  {word:'Bibliophobia',meaning:'Fear of books',category:'Phobias',difficulty:'medium',wrong:['Love of books','Fear of reading in public','Fear of libraries']},
+  {word:'Xenophobia',meaning:'Fear or dislike of foreigners',category:'Phobias',difficulty:'medium',wrong:['Fear of animals','Fear of unknown diseases','Fear of the future']},
+  {word:'Necrophobia',meaning:'Fear of dead bodies',category:'Phobias',difficulty:'medium',wrong:['Fear of death itself','Fear of ghosts','Fear of graveyards']},
+  {word:'Aerophobia',meaning:'Fear of heights',category:'Phobias',difficulty:'medium',wrong:['Fear of flying only','Fear of open air','Fear of wind']},
+  {word:'Ophiophobia',meaning:'Fear of snakes',category:'Phobias',difficulty:'hard',wrong:['Fear of reptiles in general','Fear of insects','Fear of spiders']},
+  {word:'Syngenesophobia',meaning:'Fear of relatives',category:'Phobias',difficulty:'hard',wrong:['Fear of strangers','Fear of social gatherings','Fear of crowds']},
+  {word:'Nomophobia',meaning:'Fear of being without your mobile phone',category:'Phobias',difficulty:'medium',wrong:['Fear of technology','Fear of being lost','Fear of silence']},
+  {word:'Mariticide',meaning:"The killing of one's husband",category:'Cides',difficulty:'hard',wrong:["Killing of one's wife","Killing of a king","Killing of a parent"]},
+  {word:'Parricide',meaning:"The killing of one's parents",category:'Cides',difficulty:'hard',wrong:['Killing of a sibling','Killing of a ruler','Killing of a priest']},
+  {word:'Genocide',meaning:'The killing of an entire race or ethnic group',category:'Cides',difficulty:'easy',wrong:['Killing of a king','Killing of a president','Killing of soldiers in war']},
+  {word:'Infanticide',meaning:'The killing of a newborn child',category:'Cides',difficulty:'medium',wrong:['Killing of a young person','Killing of a parent','Killing of an infant animal']},
+  {word:'Regicide',meaning:'The killing of a king',category:'Cides',difficulty:'medium',wrong:['Killing of a president','Killing of a judge','Killing of a soldier']},
+  {word:'Homicide',meaning:'The killing of a human being',category:'Cides',difficulty:'easy',wrong:['Killing of animals','Self-killing','Killing of a specific group']},
+  {word:'Suicide',meaning:'The killing of oneself',category:'Cides',difficulty:'easy',wrong:['Killing of a sibling','Killing of an enemy','Killing of a random person']},
+  {word:'Patricide',meaning:"The killing of one's father",category:'Cides',difficulty:'medium',wrong:["Killing of one's mother","Killing of one's brother","Killing of one's uncle"]},
+  {word:'Matricide',meaning:"The killing of one's mother",category:'Cides',difficulty:'medium',wrong:["Killing of one's father","Killing of one's sister","Killing of one's aunt"]},
+  {word:'Fratricide',meaning:"The killing of one's brother",category:'Cides',difficulty:'medium',wrong:["Killing of one's sister","Killing of one's friend","Killing of one's cousin"]},
+  {word:'Sororicide',meaning:"The killing of one's sister",category:'Cides',difficulty:'hard',wrong:["Killing of one's brother","Killing of one's mother","Killing of one's daughter"]},
+  {word:'Uxoricide',meaning:"The killing of one's wife",category:'Cides',difficulty:'hard',wrong:["Killing of one's husband","Killing of one's mother","Killing of one's daughter"]},
+  {word:'Dipsomania',meaning:'Morbid compulsion to keep consuming alcohol',category:'Manias',difficulty:'hard',wrong:['Obsession with drugs','Obsession with gambling','Obsession with food']},
+  {word:'Kleptomania',meaning:'Morbid compulsion to steal',category:'Manias',difficulty:'medium',wrong:['Compulsion to lie','Compulsion to hoard money','Compulsion to destroy things']},
+  {word:'Bibliokleptomania',meaning:'Morbid compulsion to steal books',category:'Manias',difficulty:'hard',wrong:['Love of books','Obsession with collecting books','Fear of books']},
+  {word:'Pyromania',meaning:'Morbid compulsion to start fires',category:'Manias',difficulty:'medium',wrong:['Fear of fire','Obsession with explosives','Compulsion to destroy property']},
+  {word:'Megalomania',meaning:'Morbid delusion of power, importance, or godliness',category:'Manias',difficulty:'medium',wrong:['Obsession with being small','Fear of greatness','Desire for simplicity']},
+  {word:'Nymphomania',meaning:'Morbid uncontrollable desire on the part of a woman',category:'Manias',difficulty:'hard',wrong:['Obsession with beauty','Compulsion to dance','Fear of men']},
+  {word:'Satyromania',meaning:'Morbid uncontrollable desire on the part of a man',category:'Manias',difficulty:'hard',wrong:['Obsession with power','Fear of women','Compulsion to travel']},
+  {word:'Monomania',meaning:'Obsession with a single idea or purpose',category:'Manias',difficulty:'medium',wrong:['Fear of being alone','Love of single things','Compulsion to repeat actions']},
+  {word:'Mythomania',meaning:'The compulsion to tell lies',category:'Manias',difficulty:'hard',wrong:['Love of mythology','Obsession with storytelling','Fear of truth']},
+  {word:'Solarium',meaning:'A place with sunlight where one can sunbathe',category:'Places & Things',difficulty:'medium',wrong:['A place for growing plants','A greenhouse','A rest home']},
+  {word:'Aquarium',meaning:'A glass container for keeping fish and water animals',category:'Places & Things',difficulty:'easy',wrong:['A place for water sports','A water treatment plant','A fish market']},
+  {word:'Podium',meaning:'A raised platform for a speaker',category:'Places & Things',difficulty:'easy',wrong:["A stage for musicians","A judge's bench",'A sitting area for audience']},
+  {word:'Auditorium',meaning:'Part of a theatre where the audience sits',category:'Places & Things',difficulty:'easy',wrong:['A place for rehearsals','A music recording room','A backstage area']},
+  {word:'Planetarium',meaning:'Optical device for projecting celestial images',category:'Places & Things',difficulty:'medium',wrong:['A space launch facility','An observatory on a mountain','A satellite tracking station']},
+  {word:'Sanatorium',meaning:'Establishment for treating the chronically ill',category:'Places & Things',difficulty:'medium',wrong:['A temporary field hospital','A mental asylum','A pharmacy']},
+  {word:'Museum',meaning:'A place where objects of art, history, or science are exhibited',category:'Places & Things',difficulty:'easy',wrong:['A place for auctioning antiques','A place for storing valuables','A library']},
+  {word:'Deciduous',meaning:'Trees whose leaves fall every autumn',category:'Places & Things',difficulty:'medium',wrong:['Trees that never lose leaves','Trees that grow in deserts','Trees that produce flowers year-round']},
+  {word:'Alma Mater',meaning:'The school or college one attended',category:'Places & Things',difficulty:'medium',wrong:["One's mother tongue","One's hometown","One's first job"]},
+  {word:'Automobile',meaning:'A self-moving vehicle',category:'Places & Things',difficulty:'easy',wrong:['A vehicle pulled by horses','A motorized boat','A flying vehicle']},
+  {word:'Perambulator',meaning:'A baby carriage',category:'Places & Things',difficulty:'hard',wrong:['A small vehicle for children to ride','A type of wheelchair','A shopping cart']},
+  {word:'Ambulance',meaning:'A vehicle for transporting sick people',category:'Places & Things',difficulty:'easy',wrong:['A mobile clinic','A police vehicle','A fire engine']},
+  {word:'Kennel',meaning:'A shelter for a dog',category:'Places & Things',difficulty:'easy',wrong:['A shelter for horses','A shelter for cats','A cage for birds']},
+  {word:'Lair',meaning:'A place where wild animals live',category:'Places & Things',difficulty:'easy',wrong:['A zoo enclosure','A cave used by humans','A burrow for rabbits only']},
+  {word:'Mint',meaning:'A place where coins are made',category:'Places & Things',difficulty:'easy',wrong:['A place for printing notes','A gold refinery','A jewellery workshop']},
+  {word:'Tannery',meaning:'A place where animal hides are tanned',category:'Places & Things',difficulty:'medium',wrong:['A place for dyeing fabrics','A slaughterhouse','A leather goods shop']},
+  {word:'Arsenal',meaning:'A place for storage of arms and ammunition',category:'Places & Things',difficulty:'medium',wrong:['A military training ground','A naval base','A bomb disposal unit']},
+  {word:'Grove',meaning:'A group of trees growing without underbrush',category:'Places & Things',difficulty:'medium',wrong:['A thick jungle','A single large tree','A garden with flowers']},
+  {word:'Aeon',meaning:'An indefinite or very long period of time',category:'General',difficulty:'medium',wrong:['A period of one century','A decade','A unit of geological time equal to a year']},
+  {word:'Aesthetics',meaning:'Appreciation of beauty by a set of principles',category:'General',difficulty:'medium',wrong:['Study of ethics','Study of physical art only','Study of music theory']},
+  {word:'Blizzard',meaning:'Severe snowstorm with uncontrollable winds',category:'General',difficulty:'easy',wrong:['A heavy rainstorm','A period of thick fog','A sudden hailstorm']},
+  {word:'Bohemian',meaning:'Living in an eccentric, unconventional manner',category:'General',difficulty:'medium',wrong:['Relating to a wealthy lifestyle','Relating to eastern cultures','Relating to strict discipline']},
+  {word:'Bonfire',meaning:'A large fire lit for celebration',category:'General',difficulty:'easy',wrong:['A fire inside a furnace','A small lamp outdoors','A controlled forest burn']},
+  {word:'Bonsai',meaning:'Dwarfed varieties of trees and shrubs grown in pots',category:'General',difficulty:'easy',wrong:['A Japanese martial art','A type of flower arrangement','A style of garden design']},
+  {word:'Hinterland',meaning:'Remote regions of a country far from rivers or coasts',category:'General',difficulty:'hard',wrong:['A coastal region','A region behind enemy lines','A mountainous region']},
+  {word:'Imbroglio',meaning:'A complex confused situation or mix-up',category:'General',difficulty:'hard',wrong:['A sudden windfall','A formal agreement','A peaceful resolution']},
+  {word:'Rejuvenate',meaning:'To make someone feel young or fresh again',category:'General',difficulty:'medium',wrong:['To make someone feel older','To restore a broken object','To revise a policy']},
+  {word:'Remiss',meaning:"Lacking care and attention in doing one's duty",category:'General',difficulty:'medium',wrong:['Extremely careful','Overly emotional','Unnecessarily strict']},
+  {word:'Mundane',meaning:'Ordinary, dull, and lacking excitement',category:'General',difficulty:'easy',wrong:['Extraordinary and spiritual','Underground and hidden','Worldwide and global']},
+  {word:'Posthumous',meaning:"Published or occurring after someone's death",category:'General',difficulty:'medium',wrong:["Published during someone's lifetime",'Awarded before death','Done before retirement']},
+  {word:'Pedagogy',meaning:'The profession or style of teaching',category:'General',difficulty:'medium',wrong:['Study of ancient languages','A method of physical therapy','A branch of medicine for children']},
+  {word:'Regalia',meaning:'The distinctive symbols of royalty',category:'General',difficulty:'medium',wrong:['The laws of a kingdom','The wealth of a royal family','A royal decree']},
+  {word:'Thearchy',meaning:'Political system based on government by God or divine rule',category:'General',difficulty:'hard',wrong:['Government by scholars','Rule by the military','A system of self-governance']},
+  {word:'Nascent',meaning:'Just beginning to exist and develop',category:'General',difficulty:'hard',wrong:['Fully mature and developed','Old and established','In the process of dying out']},
+  {word:'Virtue',meaning:'Ethically good behaviour or a quality considered morally good',category:'General',difficulty:'easy',wrong:['A physical strength','A technical skill','A legal right']},
+  {word:'Satire',meaning:'Humour that criticises weaknesses in people or society',category:'General',difficulty:'easy',wrong:['Pure comedy with no message','A dramatic tragedy','A realistic portrayal of events']},
+  {word:'Veer',meaning:'To change direction suddenly',category:'General',difficulty:'easy',wrong:['To stop suddenly','To accelerate sharply','To move in reverse']},
+  {word:'Savour',meaning:'To enjoy something slowly and with great pleasure',category:'General',difficulty:'easy',wrong:['To taste bitterness','To eat quickly','To reject something']},
+  {word:'Scapegoat',meaning:'Someone blamed for the wrongdoings of others',category:'General',difficulty:'easy',wrong:['A volunteer helper','Someone who takes credit for others','A neutral mediator']},
+  {word:'Tenacious',meaning:'Determined and persistent in achieving a goal',category:'General',difficulty:'medium',wrong:['Easily discouraged','Physically strong','Indifferent to outcomes']},
+  {word:'Misnomer',meaning:'A wrong or inaccurate name or designation',category:'General',difficulty:'medium',wrong:['A correct technical term','A formal title','A synonym for a word']},
+  {word:'Fiesta',meaning:'A public event celebrated with festivities',category:'General',difficulty:'easy',wrong:['A private ceremony','A solemn religious ritual','A formal state dinner']},
+  {word:'Destitute',meaning:'Extremely poor and lacking basic necessities',category:'General',difficulty:'easy',wrong:['Moderately wealthy','Homeless by choice','Temporarily unemployed']},
+  {word:'Carte blanche',meaning:'Absolute freedom to act as one wishes',category:'General',difficulty:'medium',wrong:['A strict set of rules','A conditional agreement','A limited authority']},
+  {word:'Agnostic',meaning:'A person unsure about the existence of God',category:'General',difficulty:'medium',wrong:["One who denies God's existence","One who strongly believes in God",'One who worships multiple gods']},
+  {word:'Mercenary',meaning:'A soldier who fights for money rather than loyalty',category:'General',difficulty:'medium',wrong:['A patriotic soldier','A military officer','A peace negotiator']},
+  {word:'Laurel',meaning:'An honour or award for achievement',category:'General',difficulty:'medium',wrong:['A type of weapon','A financial reward','A formal apology']},
+  {word:'Immoral',meaning:'Not following accepted moral principles',category:'General',difficulty:'easy',wrong:['Following strict morals','Being emotionally sensitive','Being legally compliant']},
+  {word:'Impeach',meaning:'To charge a public official with a serious crime',category:'General',difficulty:'medium',wrong:['To elect a new leader','To suspend from duty temporarily','To award a medal of honour']},
+  {word:'Embargo',meaning:'An official ban on trade or other commercial activity',category:'General',difficulty:'medium',wrong:['A trade agreement','A diplomatic mission','An import tax']},
+  {word:'Fatalist',meaning:'A person who believes events are predetermined by fate',category:'General',difficulty:'medium',wrong:['A person who denies luck','A person who avoids risk','A person who plans excessively']},
+  {word:'Gregarious',meaning:'Fond of company and being with others; sociable',category:'General',difficulty:'medium',wrong:['Reserved and introverted','Aggressive in groups','Selective about friendships']},
+  {word:'Sinecure',meaning:'A position that gives a high salary with little or no work',category:'General',difficulty:'hard',wrong:['A very demanding job','A volunteer position','A temporary role with low pay']},
+  {word:'Renegade',meaning:'A person who deserts and betrays an organisation',category:'General',difficulty:'medium',wrong:['A loyal soldier','A new recruit','A neutral observer']},
+  {word:'Fastidious',meaning:'Very attentive to detail and accuracy',category:'General',difficulty:'medium',wrong:['Careless and sloppy','Very quick in completing tasks','Indifferent to quality']},
+  {word:'Excommunicate',meaning:'To officially exclude from membership of a religious community',category:'General',difficulty:'medium',wrong:['To officially welcome into a community','To suspend temporarily','To convert to another religion']},
+  {word:'Glutton',meaning:'A person who eats excessively',category:'General',difficulty:'easy',wrong:['A person who starves themselves','A food critic','A person on a strict diet']},
+  {word:'Imitable',meaning:'Capable of being copied or imitated',category:'General',difficulty:'medium',wrong:['Impossible to copy','Unworthy of imitation','Already copied']},
+  {word:'Eisoptrophile',meaning:'A person addicted to seeing themselves in the mirror',category:'Personal Likes',difficulty:'hard',wrong:['A person who fears mirrors','A vain person who photographs themselves','A person obsessed with beauty products']},
+  {word:'Gastronome',meaning:'A person who finds pleasure in eating and drinking',category:'Personal Likes',difficulty:'hard',wrong:['A person who cooks professionally','A person who avoids food','A person who studies nutrition']},
+  {word:'Chrematophile',meaning:'A person who loves money',category:'Personal Likes',difficulty:'hard',wrong:['A person who donates money','A person who studies economics','A person who hates wealth']},
+  {word:'Oneirophile',meaning:'A person who loves dreams',category:'Personal Likes',difficulty:'hard',wrong:['A person who studies sleep','A person who interprets signs','A person who avoids sleeping']},
+  {word:'Anuptaphile',meaning:'A person who loves staying single',category:'Personal Likes',difficulty:'hard',wrong:['A person who loves marriage','A person who avoids relationships','A person who is afraid of commitment']},
+  {word:'Melophile',meaning:'A person who loves music',category:'Personal Likes',difficulty:'medium',wrong:['A person who hates noise','A professional musician','A person who studies acoustics']},
+  {word:'Sycophant',meaning:'A person who flatters others to gain favour; a bootlicker',category:'Personal Likes',difficulty:'medium',wrong:['A person who gives honest criticism','A brave person who speaks truth to power','A neutral adviser']},
+  {word:'Gourmet',meaning:'A person with a refined taste for food and drink',category:'Personal Likes',difficulty:'medium',wrong:['A professional chef','A person who eats excessively','A food scientist']},
+  {word:'Philanthropy',meaning:'Love of and desire to help mankind',category:'Personal Likes',difficulty:'medium',wrong:['Love of animals','Hatred of society','Love of personal wealth']},
+  {word:'Bibliophile',meaning:'A person who loves collecting and reading books',category:'Personal Likes',difficulty:'easy',wrong:['A person who writes books','A person who hates books','A person who sells books']},
+  {word:'Anglophile',meaning:'A person who loves and admires Britain or the British',category:'Personal Likes',difficulty:'medium',wrong:['A person who hates Britain','A British citizen living abroad','A person who studies English']},
+  {word:'Philanderer',meaning:'A person, typically a man, who has casual affairs without seriousness',category:'Personal Likes',difficulty:'hard',wrong:['A devoted partner','A romantic idealist','A marriage counsellor']},
+  {word:'Philogyny',meaning:'Fondness and admiration towards women',category:'Personal Likes',difficulty:'hard',wrong:['Hatred of women','Love of mankind in general','Love of children']},
+  {word:'Androphile',meaning:'A person who loves or is attracted to men',category:'Personal Likes',difficulty:'hard',wrong:['A person who hates men','A person who studies masculinity','A person who loves animals']},
+  {word:'Philosopher',meaning:'A person who loves and pursues wisdom',category:'Personal Likes',difficulty:'easy',wrong:['A person who studies history','A person who makes laws','A person who studies science']},
+  {word:'Misandrist',meaning:'A person who hates men',category:'Personal Likes',difficulty:'hard',wrong:['A person who loves men','A person who avoids men','A person who studies gender roles']},
+  {word:'Andromania',meaning:'Madness or obsession with males',category:'Personal Likes',difficulty:'hard',wrong:['Fear of males','Love of robots','A medical condition affecting men']},
+  {word:'Misogynist',meaning:'A person who hates women',category:'Personal Likes',difficulty:'medium',wrong:["A person who loves women","A person who studies women's rights",'A feminist']},
+  {word:'Misanthropist',meaning:'A person who hates mankind',category:'Personal Likes',difficulty:'medium',wrong:['A person who loves humanity','A hermit by choice','A philosopher who distrusts society']},
+  {word:'Patriot',meaning:'A person who loves and strongly supports their country',category:'Personal Likes',difficulty:'easy',wrong:['A government official','A military general','A person who lives abroad']},
+  {word:'Misogamist',meaning:'A person who hates marriage',category:'Personal Likes',difficulty:'hard',wrong:['A person who loves marriage','A person who has been divorced','A person studying marital law']},
+  {word:'Loquacious',meaning:'Tending to talk a great deal; talkative',category:'Personal Likes',difficulty:'medium',wrong:['Extremely quiet and reserved','Speaking in a very low voice','Prone to stuttering']},
+  {word:'Antipathy',meaning:'A strong and deep dislike or opposition',category:'Personal Likes',difficulty:'medium',wrong:['A strong attraction','A neutral feeling','A mild preference']},
+  {word:'Sympathy',meaning:"Feelings of pity and sorrow for another's misfortune",category:'Personal Likes',difficulty:'easy',wrong:["Sharing in another's joy","Understanding another's perspective deeply","Feeling the same emotions as another"]},
+  {word:'Empathy',meaning:'Ability to understand and share the feelings of another person',category:'Personal Likes',difficulty:'easy',wrong:['Feeling pity for someone','Having no emotional response','Sympathising from a distance']},
+  {word:'Bureaucracy',meaning:'A system of government by officials following fixed routines',category:'Government',difficulty:'medium',wrong:['Government by elected representatives','Government by a single powerful person','Government by the wealthy']},
+  {word:'Autocracy',meaning:'Government by a single person with absolute power',category:'Government',difficulty:'medium',wrong:['Government by the people','Government by the military','Government by nobles']},
+  {word:'Meritocracy',meaning:'Government or system ruled by those with the most ability',category:'Government',difficulty:'medium',wrong:['Government by the richest','Government by birth right','Government by elected majority']},
+  {word:'Democracy',meaning:'Government by elected representatives of the people',category:'Government',difficulty:'easy',wrong:['Government by one person','Government by the military','Government by the church']},
+  {word:'Confederacy',meaning:'A union of states, parties, or individuals',category:'Government',difficulty:'medium',wrong:['A single unified nation','A military alliance only','A religious organisation']},
+  {word:'Plutocracy',meaning:'Government by the wealthy',category:'Government',difficulty:'medium',wrong:['Government by the educated','Government by the military','Government by elected people']},
+  {word:'Aristocracy',meaning:'Government by nobles or the ruling class',category:'Government',difficulty:'medium',wrong:['Government by the common people','Government by scholars','Government by religious leaders']},
+  {word:'Theocracy',meaning:'Government by divine laws or religious leaders',category:'Government',difficulty:'medium',wrong:['Government by scholars','Government by elected officials','Government by the military']},
+  {word:'Monarchy',meaning:'Government by a single person, usually a king or queen',category:'Government',difficulty:'easy',wrong:['Government by two people','Government by a council','Government by the public']},
+  {word:'Diarchy',meaning:'Government by two persons or authorities',category:'Government',difficulty:'hard',wrong:['Government by one person','Government by three persons','Government by a committee']},
+  {word:'Oligarchy',meaning:'Government by a small group of powerful people',category:'Government',difficulty:'medium',wrong:['Government by the poor','Government by all citizens','Government by one person']},
+  {word:'Stratocracy',meaning:'Government by the military class',category:'Government',difficulty:'hard',wrong:['Government by a single leader','Government by scientists','Government by elected civilians']},
+  {word:'Anarchy',meaning:'Absence of government and order in a society',category:'Government',difficulty:'easy',wrong:['A strict authoritarian rule','A temporary military rule','A government in exile']},
+  {word:'Atheist',meaning:'A person who does not believe in God',category:'Religion & Marriage',difficulty:'easy',wrong:['A person who worships many gods',"A person unsure about God's existence",'A person who recently converted']},
+  {word:'Monotheist',meaning:'A person who believes in only one God',category:'Religion & Marriage',difficulty:'easy',wrong:['A person who believes in many gods','A person who rejects all gods','A person who worships nature']},
+  {word:'Theist',meaning:'A person who believes in the existence of God',category:'Religion & Marriage',difficulty:'easy',wrong:['A person who denies God','A person unsure about God','A person who studies religion']},
+  {word:'Polytheist',meaning:'A person who believes in many Gods',category:'Religion & Marriage',difficulty:'easy',wrong:['A person who believes in one God','A person who rejects all gods','A person who studies mythology']},
+  {word:'Pantheist',meaning:'A person who believes God is the sum of all forces in the universe',category:'Religion & Marriage',difficulty:'hard',wrong:['A person who believes God is a human-like being','A person who believes in animal gods','A person who believes in no God']},
+  {word:'Theomania',meaning:'Religious madness; the delusion of being God',category:'Religion & Marriage',difficulty:'hard',wrong:['An obsession with reading religious texts','Fear of religious rituals','A compulsion to convert others']},
+  {word:'Theomachy',meaning:'A battle or struggle among the gods',category:'Religion & Marriage',difficulty:'hard',wrong:['A religious war between humans','A debate between religious scholars','A peaceful gathering of gods']},
+  {word:'Matrimony',meaning:'The state of being married',category:'Religion & Marriage',difficulty:'easy',wrong:['The process of getting divorced','A legal contract between business partners','A religious ceremony unrelated to marriage']},
+  {word:'Sologamy',meaning:'The practice of marrying oneself',category:'Religion & Marriage',difficulty:'hard',wrong:['A marriage with no ceremony','A marriage between two strangers','An online marriage']},
+  {word:'Monogamy',meaning:'The practice of having only one marriage or partner at a time',category:'Religion & Marriage',difficulty:'easy',wrong:['Having several partners','Marrying within your tribe','Never getting married']},
+  {word:'Bigamy',meaning:'The practice of marrying two people at the same time',category:'Religion & Marriage',difficulty:'medium',wrong:['The practice of having many wives','Being in a relationship without marriage','Divorcing one spouse to marry another']},
+  {word:'Polygamy',meaning:'The practice of having several spouses at the same time',category:'Religion & Marriage',difficulty:'medium',wrong:['Having only one spouse','Marrying outside your community','Marrying within your family']},
+  {word:'Autogamy',meaning:"Self-fertilization, especially in plants",category:'Religion & Marriage',difficulty:'hard',wrong:["Marrying within one's own family","Marriage between two species","Reproduction without any gametes"]},
+  {word:'Endogamy',meaning:"Marriage within one's own social group or tribe",category:'Religion & Marriage',difficulty:'hard',wrong:["Marriage outside one's tribe","Marriage between strangers","Marriage without parental consent"]},
+  {word:'Exogamy',meaning:"Marriage outside one's own social group or tribe",category:'Religion & Marriage',difficulty:'hard',wrong:["Marriage within one's tribe","Marriage between cousins","Marriage for political alliances"]},
+  {word:'Polyandry',meaning:'The practice of having several husbands at the same time',category:'Religion & Marriage',difficulty:'hard',wrong:['Having several wives','Having no spouse','Marrying outside your community']},
+];
+
+(()=>{
+  let existing = gW();
+  if(existing.length > 15) return;
+  const existingWords = new Set(existing.map(w => w.word.toLowerCase()));
+  const toAdd = PDF_WORDS
+    .filter(w => !existingWords.has(w.word.toLowerCase()))
+    .map(w => ({ id: uid(), word:w.word, meaning:w.meaning, example:w.example||'', difficulty:w.difficulty, category:w.category, wrong:w.wrong }));
+  const seedBase = existing.length ? existing : [
+    {id:uid(),word:'Ephemeral',meaning:'Lasting for a very short time',example:'The ephemeral beauty of cherry blossoms is breathtaking.',wrong:['Everlasting','Enormous','Energetic'],difficulty:'hard',category:'General'},
+    {id:uid(),word:'Ubiquitous',meaning:'Present or found everywhere',example:'Smartphones have become ubiquitous in daily life.',wrong:['Rare','Invisible','Ancient'],difficulty:'hard',category:'General'},
+    {id:uid(),word:'Benevolent',meaning:'Kind and well-meaning',example:'The benevolent king helped the poor villagers.',wrong:['Cruel','Selfish','Indifferent'],difficulty:'medium',category:'General'},
+    {id:uid(),word:'Candid',meaning:'Truthful and straightforward',example:'She gave a candid opinion about the plan.',wrong:['Deceptive','Hesitant','Formal'],difficulty:'easy',category:'General'},
+    {id:uid(),word:'Diligent',meaning:'Careful and hard-working',example:'A diligent student always completes homework on time.',wrong:['Lazy','Reckless','Careless'],difficulty:'easy',category:'General'},
+  ];
+  sW([...seedBase, ...toAdd]);
+})();
+
+renderVocab();
+</script>
+</body>
+</html>
